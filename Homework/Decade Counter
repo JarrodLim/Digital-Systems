@@ -1,0 +1,72 @@
+// This is my code for FPGA decade counter
+//!DO NOT EDIT MODULE NAME AND PORT NAME!
+module decade_counter(
+    input clk, //clock
+    input rst, //reset
+    output [3:0] count,
+    output ten
+);
+reg [3:0] count = 4'd0000, ten = 0;
+always @(posedge clk)
+begin
+    if(rst == 0)
+        begin
+            if(ten == 1)//reset 10s counter
+                ten = 0;
+            if(count >= 4'd0000 && count <= 4'd1000)
+                count<=count+4'd0001;
+            else
+                begin
+                    count<=4'd0000;
+                    ten = 1;
+                end
+        end
+    else
+        begin
+        count<=4'd0000;
+        ten = 0;
+        end
+end
+//YOUR CODE HERE
+endmodule
+
+
+// And this is its testbench -------------------------------------------------------------------------------------------------------
+module decade_counter_tb();
+
+reg clk;
+reg rst;
+wire [3:0]count;
+wire ten;
+
+decade_counter decade_counter_u0(
+    .clk(clk),
+    .rst(rst),
+    .count(count),
+    .ten(ten)
+);
+
+always
+begin
+    #10 clk=!clk; //flip flop
+    //YOUR CODE HERE - Generate 20 unit time clock;
+end
+
+always //activating the reset button
+begin
+    //testing the reset button
+    #300 rst = 1;
+    #30 rst = 0;
+end
+
+initial begin
+    rst = 1;
+    clk = 0;
+    #30 rst = 0; //enable
+    #500; //end program
+    $stop;
+    $finish;
+    //YOUR CODE HERE - Initialize the clk, rst;
+end
+
+endmodule
