@@ -11,7 +11,7 @@ Adder Adder_u0(
 );
 
 always
-begin
+begin //testing all possible combinations for the switches
     #0 sw_r = 3'b000;
     #20 sw_r = 3'b001;
     #20 sw_r = 3'b010;
