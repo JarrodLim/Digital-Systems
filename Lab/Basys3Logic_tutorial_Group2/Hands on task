@@ -1,0 +1,27 @@
+//this is the code from group 2 hosted by Jarrod Lim
+//XDS from https://github.com/Digilent/digilent-xdc/blob/master/Basys-3-Master.xdc
+`timescale 1ns / 1ps
+
+module b3logic(
+ input [2:0] sw, //left side most significant, right side least significant
+ output [3:0] led //have to declare LED 1
+ );
+
+assign led[1] = 1'b1; //this is just leaving the LED on
+//When you call the scalar, the name has to be in front. when declare its behind,  its different in varilog
+//NAND Gate
+//Approach 1 RTL
+    //nand u0(led[0],sw[1],sw[0]); //output, input1, input2
+//Approach 2 Assign
+    //assign led[0] = ~(sw[1] & sw[0]); //~ is a not, an inverter
+//Approach 3 Always
+    //reg led_r; 
+    //always @(*) begin //inside the always block, you can only use the register
+    //    led_r <= ~(sw[1] & sw[0]); //<= is not a logic operation, is just =
+    //end
+    //assign led[0] = led_r; //since only reg can be used inside always block, we can only assign led[0] outside
+
+//Using approach 2 for A&B +c
+//sw0 = C, sw1 = B, sw2 = A
+    assign led[0] = (sw[2]&sw[1]) | sw[0];
+endmodule
