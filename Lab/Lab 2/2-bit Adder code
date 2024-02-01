@@ -10,4 +10,5 @@ always@(*)begin
 end
 assign led[0] = counter[0]; //taking the last bit setting to LED0
 assign led[1] = counter[1]; //taking the first bit and setting to LED1
+//assign led[1:0] = counter[1:0]
 endmodule
