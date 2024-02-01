@@ -1,15 +1,24 @@
+`timescale 1ns / 1ps
+
 module b3logic_tb();
- wire y;
- reg a,b;
+ wire [1:0] led_r;
+ reg [2:0] sw_r;
  
-b3logic dut(y,a,b);
+b3logic dut(
+    .led(led_r[1:0]),
+    .sw(sw_r[2:0])
+);
 
 initial
  begin
-  #0  a=0;b=0;
-  #10 a=0;b=1;
-  #10 a=1;b=0;
-  #10 a=1;b=1;
+  #0  sw_r = 2'b000;
+  #10 sw_r = 2'b001;
+  #10 sw_r = 2'b010;
+  #10 sw_r = 2'b011;
+  #10 sw_r = 2'b100;
+  #10 sw_r = 2'b101;
+  #10 sw_r = 2'b110;
+  #10 sw_r = 2'b111;
   #10 $stop;
  end
  
