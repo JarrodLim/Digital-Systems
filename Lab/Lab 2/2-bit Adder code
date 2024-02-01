@@ -1,13 +1,13 @@
 `timescale 1ns / 1ps
 module Adder(
-input [2:0] sw, //a b and c are the 3 sw inputs
-output [1:0] led //y and z are the led outputs
+input [2:0] sw, //taking 3 switches as inputs
+output [1:0] led //setting 2 LEDs as outputs
     );
 
-reg [1:0]counter = 2'd00;
+reg [1:0]counter = 2'd00; //declaring a 2bit variable to be used under always
 always@(*)begin
-    counter <= sw[2] + sw[1] + sw[0];
+    counter <= sw[2] + sw[1] + sw[0]; //counting the number of switches that are on, this will be saved as a 2 bit binary
 end
-assign led[0] = counter[0];
-assign led[1] = counter[1];
+assign led[0] = counter[0]; //taking the last bit setting to LED0
+assign led[1] = counter[1]; //taking the first bit and setting to LED1
 endmodule
