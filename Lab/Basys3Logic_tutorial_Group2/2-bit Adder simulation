@@ -1,46 +1,26 @@
 `timescale 1ns / 1ps
-module Adder(
-input a,b,c, //a b and c are the 3 sw inputs
-output y,z //y and z are the led outputs
-    );
-
-reg [1:0]counter = 2'd00;
-always@(*)begin
-    counter <= a + b + c;
-end
-assign y = counter[0];
-assign z = counter[1];
-endmodule
-
-
-//tb-----------------------------------------------------------------------------------------------------------
-
-`timescale 1ns / 1ps
 
 module Adder_tb;
 
-reg a,b,c;
-wire y,z;
+reg [2:0] sw_r;
+wire [1:0] led_r;
 
 Adder Adder_u0(
-    .a(a),
-    .b(b),
-    .c(c),
-    .y(y),
-    .z(z)
+    .sw(sw_r[2:0]),
+    .led(led_r[1:0])
 );
 
 always
 begin
-    a=0;b=0;c=0;
-    #20 a=0;b=0;c=1;
-    #20 a=0;b=1;c=0;
-    #20 a=0;b=1;c=1;
-    #20 a=1;b=0;c=0;
-    #20 a=1;b=0;c=1;
-    #20 a=1;b=1;c=0;
-    #20 a=1;b=1;c=1;
-    #20 a=1;b=1;c=1;
+    #0 sw_r = 3'b000;
+    #20 sw_r = 3'b001;
+    #20 sw_r = 3'b010;
+    #20 sw_r = 3'b011;
+    #20 sw_r = 3'b100;
+    #20 sw_r = 3'b101;
+    #20 sw_r = 3'b110;
+    #20 sw_r = 3'b111;
+
 end
 
 endmodule
