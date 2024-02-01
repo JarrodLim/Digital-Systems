@@ -10,7 +10,7 @@ b3logic dut(
 );
 
 initial
- begin
+ begin //testing all possible combinations of switches
   #0  sw_r = 3'b000;
   #10 sw_r = 3'b001;
   #10 sw_r = 3'b010;
