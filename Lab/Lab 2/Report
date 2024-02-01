@@ -1,0 +1,34 @@
+Assignment 1 (Week 2): T01 Basys3 Group 2
+Gabriel Jabile 1008656
+Tom Manuel Opalla Piccio 1006293
+Chua Min Jie Michelle 1006382
+Jarrod Lim 1003160
+
+Design:
+Main Lab
+For the Hands On Task, we used an “assign” approach, generally we followed the brief tutorial the TA had on creating the NAND gate. From there we simply modified the code to obtain the 
+y = a  b + c (a = W16, b = V16, c = V17)
+
+Optional
+For the optional part, from the truth table, we noticed that the adder was simply counting the number of switches that are on. I.e. If any one switch is on, LED0 = 1, if any 2 switches are on, LED1 = 1. And if all 3 switches are on, both LEDs will turn on. Therefore, we simply added the values of all 3 binary switches together to a 2-bit variable. Thereafter, extracting the 2-bit variable data to output onto each LED. 
+
+Challenges:
+Main Lab
+The main challenge faced was the new syntax used in Verilog. Initially, we were confused as to which LEDs and switches corresponded to the ones in the Basys constraint file. After self-research, troubleshooting and help from the TA, we managed to debug.
+
+Optional
+When programming for the 2-bit adder, there was an issue retrieving the counter value after adding the values of sw[2:0]. To overcome this, the counter was declared as a 2 bit value, with this, we were able to have the bits carry over. Thereafter, each LED is assigned to each bit of the counter variable. i.e. counter[0], counter[1].
+
+Lessons Learned:
+Main Lab
+Incorporating logic function into the Basys 3 using Vivado.
+Creating Constraint file for Basys 3
+Synthesis, Implementation, Generate Bit Stream and uploading the code
+
+Optional
+Understanding and using basic bitwise operations
+Using the ‘Always’ programming approach with registers
+Modifying the XDC file to include more IO’s
+
+GitHub
+https://github.com/JarrodLim/Digital-Systems/tree/main/Lab/Lab%202
