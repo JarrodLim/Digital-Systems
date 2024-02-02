@@ -1,0 +1,65 @@
+//!DO NOT EDIT MODULE NAME AND PORT NAME!
+module multiplexer(
+    input [1:0]A,
+    input [1:0]B,
+    input [1:0]C,
+    input [1:0]D,
+    input [1:0]SEL,
+    output [1:0]X
+);
+
+//YOUR CODE HERE
+//TIPS: IN THE VERILOG CASE STATEMENT, YOU HAVE TO LIST ALL CONDITION TO AVIOD ANY AMBIGUOUS STATEMENT;
+reg [1:0] value = 2'b00;
+always @(*)
+begin
+    if(SEL == 2'b00)
+        value = A;
+    else if(SEL == 2'b01)
+        value = B;
+    else if(SEL == 2'b10)
+        value = C;
+    else if(SEL == 2'b11)
+        value = D;
+end
+assign X[1:0] = value[1:0];
+endmodule
+//------------------------------------------------------------------------------------------------------------//
+module multiplexer_tb();
+
+    reg [1:0]A;
+    reg [1:0]B;
+    reg [1:0]C;
+    reg [1:0]D;
+    reg [1:0]SEL;
+    wire [1:0]X;
+
+multiplexer multiplexer_u0(
+    .A(A[1:0]),
+    .B(B[1:0]),
+    .C(C[1:0]),
+    .D(D[1:0]),
+    .SEL(SEL[1:0]),
+    .X(X[1:0])
+);
+
+always begin
+    SEL = 2'b00;
+    #10 SEL = 2'b01;
+    #10 SEL = 2'b10;
+    #10 SEL = 2'b11;
+    #10;
+    $stop;
+    $finish;
+end
+
+initial begin
+    SEL = 0;
+    A = 0;
+    B = 1; C = 1; //enable
+    D = 3; //end program
+
+    //YOUR CODE HERE - Initialize the clk, rst;
+end
+
+endmodule
