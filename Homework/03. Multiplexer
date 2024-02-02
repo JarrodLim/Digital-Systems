@@ -43,7 +43,7 @@ multiplexer multiplexer_u0(
     .X(X[1:0])
 );
 
-always begin
+always begin //running the test
     SEL = 2'b00;
     #10 SEL = 2'b01;
     #10 SEL = 2'b10;
@@ -53,13 +53,11 @@ always begin
     $finish;
 end
 
-initial begin
+initial begin //initializing all the mux values
     SEL = 0;
     A = 0;
-    B = 1; C = 1; //enable
-    D = 3; //end program
-
-    //YOUR CODE HERE - Initialize the clk, rst;
+    B = 1; C = 1;
+    D = 3;
 end
 
 endmodule
