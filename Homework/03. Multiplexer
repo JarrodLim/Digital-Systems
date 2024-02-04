@@ -10,9 +10,10 @@ module multiplexer(
 
 //YOUR CODE HERE
 //TIPS: IN THE VERILOG CASE STATEMENT, YOU HAVE TO LIST ALL CONDITION TO AVIOD ANY AMBIGUOUS STATEMENT;
-reg [1:0] value = 2'b00;
+reg [1:0] value = 2'b00; //declare reg var for use within always
 always @(*)
-begin
+begin //if else statements to catch each input to direct output, just testing with normal if else statments. not as tidy as case
+    /*
     if(SEL == 2'b00)
         value = A;
     else if(SEL == 2'b01)
@@ -21,9 +22,18 @@ begin
         value = C;
     else if(SEL == 2'b11)
         value = D;
+    */
+
+    case(SEL) //case statements can be better than typical if-else statement because it lets you choose between muliple options
+        2'b00:value <= A;
+        2'b01:value <= B;
+        2'b10:value <= C;
+        2'b11:value <= D;
+    endcase;
 end
 assign X[1:0] = value[1:0];
 endmodule
+
 //Below is the testbench------------------------------------------------------------------------------------------------------------//
 module multiplexer_tb();
 
