@@ -1,4 +1,35 @@
 //!DO NOT MODIFY MODULE NAME AND PORT NAME!
+module demultiplexer(
+    input [1:0]A,
+    input [1:0]SEL,
+    output [1:0]W,
+    output [1:0]X,
+    output [1:0]Y,
+    output [1:0]Z
+    );
+    
+//YOUR CODE HERE
+reg [1:0]val[3:0]; //this makes array of 4 1:0s, i think
+always @(*)
+begin
+    {val[0], val[1], val[2], val[3]} = {0,0,0,0}; //or instead of 0 i use 2'b00, could use less memory?
+    case(SEL)
+        2'b00:val[0] <= A;
+        2'b01:val[1] <= A;
+        2'b10:val[2] <= A;
+        2'b11:val[3] <= A;
+    endcase; 
+end
+assign W[1:0] = val[0];
+assign X[1:0] = val[1];
+assign Y[1:0] = val[2];
+assign Z[1:0] = val[3];
+endmodule
+
+
+//less optimized module? -----------------------------------------------------------------------------------------//
+
+//!DO NOT MODIFY MODULE NAME AND PORT NAME!
 // this code is very basic, will continue to optimize and use less variables
 module demultiplexer(
     input [1:0]A,
