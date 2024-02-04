@@ -1,0 +1,70 @@
+//!DO NOT MODIFY MODULE NAME AND PORT NAME!
+// this code is very basic, will continue to optimize and use less variables
+module demultiplexer(
+    input [1:0]A,
+    input [1:0]SEL,
+    output [1:0]W,
+    output [1:0]X,
+    output [1:0]Y,
+    output [1:0]Z
+    );
+    
+//YOUR CODE HERE
+reg [1:0] valueW = 2'b00;
+reg [1:0] valueX = 2'b00;
+reg [1:0] valueY = 2'b00;
+reg [1:0] valueZ = 2'b00;
+always @(*)
+begin
+    valueW = 2'b00;
+    valueX = 2'b00;
+    valueY = 2'b00;
+    valueZ = 2'b00;
+    case(SEL)
+        2'b00:valueW <= A;
+        2'b01:valueX <= A;
+        2'b10:valueY <= A;
+        2'b11:valueZ <= A;
+    endcase; 
+end
+assign W[1:0] = valueW[1:0];
+assign X[1:0] = valueX[1:0];
+assign Y[1:0] = valueY[1:0];
+assign Z[1:0] = valueZ[1:0];
+endmodule
+
+
+//Test bench here--------------------------------------------------------------------------------------------------------//
+
+module demultiplexer_tb();
+    reg [1:0]A;
+    reg [1:0]SEL;
+    wire [1:0]W;
+    wire [1:0]X;
+    wire [1:0]Y;
+    wire [1:0]Z;
+
+demultiplexer demultiplexer_u0(
+    .A(A[1:0]),
+    .SEL(SEL[1:0]),
+    .W(W[1:0]),
+    .X(X[1:0]),
+    .Y(Y[1:0]),
+    .Z(Z[1:0])
+);
+
+always begin //running the test
+    A = 2'b00; SEL = 2'b00;
+    #10 A = 2'b01; SEL = 2'b01;
+    #10 A = 2'b01; SEL = 2'b10;
+    #10 A = 2'b11; SEL = 2'b11;
+    #10;
+    $stop;
+    $finish;
+end
+
+initial begin //initializing all the mux values
+A = 0;
+end
+
+endmodule
