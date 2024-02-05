@@ -10,7 +10,7 @@ Adder Adder_u0(
     .led(led_r[1:0])
 );
 
-always
+initial
 begin //testing all possible combinations for the switches
     #0 sw_r = 3'b000;
     #20 sw_r = 3'b001;
@@ -20,7 +20,8 @@ begin //testing all possible combinations for the switches
     #20 sw_r = 3'b101;
     #20 sw_r = 3'b110;
     #20 sw_r = 3'b111;
-
+    #20;
+    $stop;
 end
 
 endmodule
