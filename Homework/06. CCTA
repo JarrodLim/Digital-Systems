@@ -18,7 +18,7 @@ begin
         2'b01: values <= A - C;
         2'b10: values <= 0;
         2'b11: values <= 0;
-        
+        //using if else statements may be less efficient. but make sure you catch evreything, or use default.
     endcase;
 end
 assign q = values;
