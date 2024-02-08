@@ -1,112 +1,111 @@
-`timescale 1ns / 0.001ps
-//lets build a 10hz counter to track 10ms, we can put each 10ms into the LEDs for visualization
-//the second 500hz signal is used to quickly update the 7segment display, i.e. the board
-//lets include additional buttons, Start, Stop and Reset
-module stopwatch(
-    input clk, //100MHz clock, this comes from the board
-    input btnU, //start
-    input btnD, //stop
-    input btnC, //rest
-    output [15:0]led, //for mili second counter
-    //output [15:14]led, //to show the counters state
-    output [6:0]seg, //to control the 7-segment display
-    output [3:0]an, //to control 4 of the 7-segment displays
-    output dp //to control the decimal point on the 7 segment display array
-    );
-    
-//Since logic low >> logic high we do the following
-wire Start; assign Start = ~btnU;
-wire Stop; assign Stop = ~btnD;
-wire Reset; assign Reset = ~btnC;
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: Singapore University of Technology and Design
+// Engineer: Xiang Maoyang
+// Create Date: 08.01.2024 12:47:59
+// Design Name: Basys3 Demo - Stop Watch 
+// Module Name: top_module
+// Breif: This is a simple demo stop-watch project on Basys 3 FPGA Development Board;
+// The stop watch will display time (MMSS) on 4 digs 7Segment; (M-Minute S-Second)
+// The stop watch can be reset by btnR on board; 
+// Target Devices: Basys 3 Board 
+//////////////////////////////////////////////////////////////////////////////////
 
-reg clk_1_hz;
-reg clk_10_hz; 
-reg clk_500_hz;
-reg [8:0]clk_1_counter;
-reg [5:0]clk_10_counter; //500/(10*2) = 25, 5 bits required
-reg [16:0]clk_500_counter; 
+module top_module(
+    input clk,      //100MHz Clock Source;
+    input btnR,     //BTNR - RESET System;
+    output [6:0] seg,// 7-Segment - Segment[6:0];
+    output [9:0] led,
+    output dp,      // 7-Segment - Segment-DP;
+    output [3:0] an // 7-Segment - Common Anode;
+);
 
-//lets store the counter state to see what the counters should do
-reg state = 0;//0 is stopped, 1 is start, 2 is reset
-assign led[15:14] = 0;
-always @(*)
-    begin
-     if(Start == 0)begin
-        state = 1;
-        end
-     else if(Stop == 0)begin
-        state = 0;
-        end //stop count at current position
-     else if(Reset == 0)begin
-        state = 2;
-        end //reset and continue running
-    end
-    assign led[15:14] = state;
+//Set BTNR Button as Reset Function;
+//Normally, the digital systems prefer logic low as reset rather than logic high;
+//Therefore, we declare a reset wire (rstn) which is connected to btnR with NOT gate;    
+wire rstn;
+assign rstn=~btnR;
 
-//500hz clock
-always@(posedge clk, posedge Start)begin
-    if(!Reset)begin              //Non-Sync Reset
-        clk_500_hz <= 1'b0;    //Set 500hz clock as '0' to avoid any uncertain status;        
-        clk_500_counter <= 17'd0; //Clear counter
+//In this application, we need 2 clock, 1Hz and 500Hz;
+//500Hz - Drive 7Segment Display;
+//1Hz   - Drive Stop Watch;
+//Create 500Hz and 1Hz Clock Signal from input 100Mhz Clk Signal;
+reg clk_500hz_r;
+reg clk_10hz_r;
+reg clk_1hz_r;
+reg [16:0]cnter_500hz_r;    // 100Mhz/(500Hz*2) =  100_000(17 bits);
+reg [4:0] cnter_10hz_r;      // 500Hz/(10Hz*2) = 25 (8 bits)
+reg [7:0] cnter_1hz_r;      // 500Hz/(1Hz*2) = 250 (8 bits)
+
+//Create 500Hz Clock from 100MHz Clock Source;
+//We iterate the 100MHz clock signal 100,000 times and perform a toggle operation on the clk_500hz_r register;
+always@(posedge clk, negedge rstn)begin
+    if(!rstn)begin              //Non-Sync Reset
+        clk_500hz_r <= 1'b0;    //Set 500hz clock as '0' to avoid any uncertain status;        
+        cnter_500hz_r <= 17'd0; //Clear counter
     end
     else begin
-        if(clk_500_counter == 17'd100_000-1'b1)begin   //When counter reach 100_000
-            clk_500_hz <= ~clk_500_hz;        //Toggle 500Hz CLk reg;
-            clk_500_counter <= 17'd0;             //Clear counter
+        if(cnter_500hz_r == 17'd100_000-1'b1)begin   //When counter reach 100_000
+            clk_500hz_r <= ~clk_500hz_r;        //Toggle 500Hz CLk reg;
+            cnter_500hz_r <= 17'd0;             //Clear counter
         end
-        else if(state == 1) //only count if start
-            clk_500_counter <= clk_500_counter +1'b1; //Counter
+        else
+            cnter_500hz_r <= cnter_500hz_r +1'b1; //Counter
     end
 end
 
-//10hz clock
-always@(posedge clk_500_hz, state == 1)begin
-    if(!Reset)begin
-        clk_10_hz <= 1'b0;
-        clk_10_counter <= 6'd0;
+//Create 10Hz Clock from 500Hz Clock Source;
+always@(posedge clk_500hz_r, negedge rstn)begin
+    if(!rstn)begin
+        clk_10hz_r <= 1'b0;
+        cnter_10hz_r <= 5'd0;
     end
     else begin
-        if(clk_10_counter == 6'd25-1'b1)begin //counting to 25 only, no need to 250
-            clk_10_hz <= ~clk_10_hz; //because its 10hz
-            clk_10_counter <= 6'd0;
+        if(cnter_10hz_r == 5'd24)begin //flip every time i cound 25, x2 means 50, 500/50 = 10hz
+            clk_10hz_r <= ~clk_10hz_r;
+            cnter_10hz_r <= 5'd0;
         end
-        else if(state == 1)//only count while it is started
-            clk_10_counter <= clk_10_counter +1'b1;
+        else
+            cnter_10hz_r <= cnter_10hz_r + 1;
     end
 end
 
-//1hz clock
-always@(posedge clk_500_hz, state == 1)begin
-    if(!Reset)begin
-        clk_1_hz <= 1'b0;
-        clk_1_counter <= 8'd0;
+//Create 1Hz Clock from 500Hz Clock Source;
+always@(posedge clk_500hz_r, negedge rstn)begin
+    if(!rstn)begin
+        clk_1hz_r <= 1'b0;
+        cnter_1hz_r <= 8'd0;
     end
     else begin
-        if(clk_1_counter == 8'd250-1'b1)begin //counting to 25 only, no need to 250
-            clk_1_hz <= ~clk_1_hz; //because its 10hz
-            clk_1_counter <= 8'd0;
+        if(cnter_1hz_r == 8'd249)begin
+            clk_1hz_r <= ~clk_1hz_r;
+            cnter_1hz_r <= 8'd0;
         end
-        else if(state == 1)//only count while it is started
-            clk_1_counter <= clk_1_counter +1'b1;
+        else
+            cnter_1hz_r <= cnter_1hz_r + 1;
     end
 end
+
 //driving miliseconds using LEDs
-reg [3:0]miliseconds = 0;
-reg [3:0]seconds = 0;
-reg [3:0]minutes = 0;
-reg [9:0]led_state = 0;//{0,0,0,0,0,0,0,0,0,0};
-always @(posedge clk_500_hz)begin
-    if(state == 2 || miliseconds == 10)
+reg [3:0]miliseconds = 5;
+reg [9:0]led_state = {0,0,0,0,0,1,1,1,1,1};//{0,0,0,0,0,0,0,0,0,0};
+always @(negedge rstn, posedge clk_10hz_r)begin
+    if(rstn == 0)
         begin
-        miliseconds = 0;
-        seconds <= seconds + 1;
-        led_state = 0;
-        end;
-    if(seconds == 60)
-        begin
-        seconds = 0;
-        minutes <= minutes + 1;
+            led_state <= {0,0,0,0,0,1,1,1,1,1};
+            miliseconds <= 5;
         end
+    else
+        begin
+        if(miliseconds == 9)
+            begin
+                miliseconds <= 0;
+                led_state <= 0;
+            end
+        else
+            miliseconds <= miliseconds + 1; 
+        end
+          
     case(miliseconds) //this is not running properly
         4'h0:led_state[0] = 1;
         4'h1:led_state[1] = 1;
@@ -119,7 +118,7 @@ always @(posedge clk_500_hz)begin
         4'h8:led_state[8] = 1;
         4'h9:led_state[9] = 1;
     endcase
-    miliseconds <= miliseconds + 1;
+
 end
 
 assign led[0] = led_state[0];
@@ -133,31 +132,44 @@ assign led[7] = led_state[7];
 assign led[8] = led_state[8];
 assign led[9] = led_state[9];
 
+//Drive 7Segment Display;
+//There are 4 7Segment LED on the Basys 3 Board, which share segment driver;
+//Hence, we have to turn on 4 7Segment LED in sequence;
+reg [7:0] segment_r;        //Register - Drive 7 Segment
+assign dp =  segment_r[7];  //Connnect Register(7-Segment) to Segment Pin-DP
+assign seg[6:0] = segment_r[6:0];   //Connnect Register(7-Segment) to Segment Pin (seg[6:0])
+reg [3:0] cur_num_r;        //Register - BCD Number Display at this moment; 
+wire [15:0] bcd_num;        //Wire - 4 BCD Number;
+reg [3:0] an_r;             //Register - Drive Common Anode;
+assign an = ~an_r;          //Connnect Register(Anode) to Anode Pins with NOT Gate;
+                            //If 7Segment is Common Cathod, connect Pins without NOT Gate
 
-//driving anode aka selecting which 7 segment to use
-reg [3:0]anodes;
-assign an = ~anodes;
-always @(negedge Start,posedge clk_500_hz)begin
-    if(!Reset)begin
-        anodes <= 4'b0000;    //When system reset, empty all display;
+//Drive 7Segment Anode;
+//When an_r == 0001, DIG4 will turn on;
+//When an_r == 0001, at posedge clk_500hz_r, an_r will be set to 0010(DIG3 ON);
+//When an_r == 0010, at posedge clk_500hz_r, an_r will be set to 0100(DIG2 ON);
+//....
+//DIG4 -> DIG3 -> DIG2 -> DIG1 -> DIG4 -> DIG3 -> DIG2 -> ...;
+always @(negedge rstn,posedge clk_500hz_r)begin
+    if(!rstn)begin
+        an_r <= 4'b0000;    //When system reset, empty all display;
     end
     else begin
-        case(anodes)                  
-        4'b0001: anodes <= 4'b0010;   //DISPLAY ON DIG3
-        4'b0010: anodes <= 4'b0100;   //DISPLAY ON DIG2
-        4'b0100: anodes <= 4'b1000;   //DISPLAY ON DIG1
-        default: anodes <= 4'b0001;   //DISPLAY ON DIG4
+        case(an_r)                  
+        4'b0001: an_r <= 4'b0010;   //DISPLAY ON DIG3
+        4'b0010: an_r <= 4'b0100;   //DISPLAY ON DIG2
+        4'b0100: an_r <= 4'b1000;   //DISPLAY ON DIG1
+        default: an_r <= 4'b0001;   //DISPLAY ON DIG4
         endcase
     end
 end
+
 //When DIG4 on, BCD Number Display at this moment is bcd_num[3:0];  (i.e Stop Watch - Second Unit)
 //When DIG3 on, BCD Number Display at this moment is bcd_num[7:4];  (i.e Stop Watch - Second Decade)
 //When DIG2 on, BCD Number Display at this moment is bcd_num[11:8]; (i.e Stop Watch - Minute Unit)
 //When DIG1 on, BCD Number Display at this moment is bcd_num[15:12];(i.e Stop Watch - Minute Decade)
-reg [3:0]cur_num_r; 
-wire [15:0]bcd_num;
-always @(anodes,bcd_num)begin
-    case(anodes)
+always @(an_r,bcd_num)begin
+    case(an_r)
         4'b0001: cur_num_r <= bcd_num[3:0];
         4'b0010: cur_num_r <= bcd_num[7:4];
         4'b0100: cur_num_r <= bcd_num[11:8];
@@ -167,7 +179,6 @@ always @(anodes,bcd_num)begin
 end
 
 //Decode BCD NUM into corrosponding 7Segment Code;
-reg [7:0]segment_r; assign dp = segment_r[7];
 always @(cur_num_r) begin
     case(cur_num_r)
         4'h0:segment_r <= 8'hc0;    //NUM "0"
@@ -200,8 +211,8 @@ reg sec_unit_cout,sec_deca_cout,min_unit_cout; //Carry Out Signal, When 4 BCD Nu
 //Second Decade     5
 //Second Unit       9
 
-always @(posedge clk_1_hz or negedge Start)begin
-    if(!Reset)begin
+always @(posedge clk_1hz_r or negedge rstn)begin
+    if(!rstn)begin
         sec_unit_bcd_r <= 4'd0; //Clear BCD Number Counter;
         sec_unit_cout <= 1'b0;  //Clear Cout Signal;
     end
@@ -217,8 +228,8 @@ always @(posedge clk_1_hz or negedge Start)begin
     end
 end
 
-always @(posedge sec_unit_cout or negedge Start)begin
-    if(!Reset)begin
+always @(posedge sec_unit_cout or negedge rstn)begin
+    if(!rstn)begin
         sec_deca_bcd_r <= 4'd0;
         sec_deca_cout <= 1'b0;
     end
@@ -234,8 +245,8 @@ always @(posedge sec_unit_cout or negedge Start)begin
     end
 end
 
-always @(posedge sec_deca_cout or negedge Start)begin
-    if(!Reset)begin
+always @(posedge sec_deca_cout or negedge rstn)begin
+    if(!rstn)begin
         min_unit_bcd_r <= 4'd0;
         min_unit_cout <= 1'b0;
     end
@@ -251,8 +262,8 @@ always @(posedge sec_deca_cout or negedge Start)begin
     end
 end
 
-always @(posedge min_unit_cout or negedge Start)begin
-    if(!Reset)begin
+always @(posedge min_unit_cout or negedge rstn)begin
+    if(!rstn)begin
         min_deca_bcd_r <= 4'd0;
     end
     else begin
