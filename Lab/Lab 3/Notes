@@ -1,0 +1,15 @@
+Additional functions
+1 - showing the miliseconds
+To demonstrate this function, we had to create another clock at 10hz. From there, for every count of the milisecond, we light up one of the LEDs and reset
+it the moment 10 miliseconds was reached
+
+The issue faced was the miliseconds and seconds synchronizing. We discovered that the seconds timing was exactly 5 miliseconds early during the start phase.
+We are unsure why even after looking through the code. Another issue was that we accidentally made out miliseconds count to 11 instead ot 10 before resetting.
+
+2 - Start - Stop function
+This function was relatively simple to implement. We just included 2 more buttons and these buttons would control another variable we labeled as state.
+This state tells us what state the stop watch is in, start or stop. depending on what that it was in, we would activate or deactivate the 500hz loop.
+
+There was an issue with this where when we stopped / paused the clock. One of the 4 7-segment displays would be on because only 1 anode is on as the 500hz controls
+the anodes. Initially we tried letting the board clk control it but it would not properly display the time. To circumvent this, we created another 500hz clk to
+control the anodes seperately.
