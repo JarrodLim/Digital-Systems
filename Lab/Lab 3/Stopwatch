@@ -14,6 +14,8 @@
 module top_module(
     input clk,      //100MHz Clock Source;
     input btnR,     //BTNR - RESET System;
+    input btnL,     //BTNL - START System;
+    input btnC,     //BTNC - PAUSE / STOP System;
     output [6:0] seg,// 7-Segment - Segment[6:0];
     output [9:0] led,
     output dp,      // 7-Segment - Segment-DP;
@@ -24,18 +26,35 @@ module top_module(
 //Normally, the digital systems prefer logic low as reset rather than logic high;
 //Therefore, we declare a reset wire (rstn) which is connected to btnR with NOT gate;    
 wire rstn;
+wire strt;
+wire stp;
+reg state = 0; //default stopped
 assign rstn=~btnR;
+assign strt=~btnL;
+assign stp=~btnC;
 
 //In this application, we need 2 clock, 1Hz and 500Hz;
 //500Hz - Drive 7Segment Display;
 //1Hz   - Drive Stop Watch;
 //Create 500Hz and 1Hz Clock Signal from input 100Mhz Clk Signal;
 reg clk_500hz_r;
+reg clk_500hz_r2;
 reg clk_10hz_r;
 reg clk_1hz_r;
 reg [16:0]cnter_500hz_r;    // 100Mhz/(500Hz*2) =  100_000(17 bits);
+reg [16:0]cnter_500hz_r2;    // 100Mhz/(500Hz*2) =  100_000(17 bits);
 reg [4:0] cnter_10hz_r;      // 500Hz/(10Hz*2) = 25 (8 bits)
 reg [7:0] cnter_1hz_r;      // 500Hz/(1Hz*2) = 250 (8 bits)
+
+//Stop watch state
+always@(posedge clk)begin
+    if(!strt)begin
+    state = 1; //Start state
+    end
+    else if(!stp)begin
+    state = 0; //Stop state
+    end
+end
 
 //Create 500Hz Clock from 100MHz Clock Source;
 //We iterate the 100MHz clock signal 100,000 times and perform a toggle operation on the clk_500hz_r register;
@@ -44,13 +63,28 @@ always@(posedge clk, negedge rstn)begin
         clk_500hz_r <= 1'b0;    //Set 500hz clock as '0' to avoid any uncertain status;        
         cnter_500hz_r <= 17'd0; //Clear counter
     end
-    else begin
+    else if(state == 1)begin
         if(cnter_500hz_r == 17'd100_000-1'b1)begin   //When counter reach 100_000
             clk_500hz_r <= ~clk_500hz_r;        //Toggle 500Hz CLk reg;
             cnter_500hz_r <= 17'd0;             //Clear counter
         end
         else
             cnter_500hz_r <= cnter_500hz_r +1'b1; //Counter
+    end
+end
+
+always@(posedge clk, negedge rstn)begin //this is to keep the 7-segment on
+    if(!rstn)begin              //Non-Sync Reset
+        clk_500hz_r2 <= 1'b0;    //Set 500hz clock as '0' to avoid any uncertain status;        
+        cnter_500hz_r2 <= 17'd0; //Clear counter
+    end
+    else begin
+        if(cnter_500hz_r2 == 17'd100_000-1'b1)begin   //When counter reach 100_000
+            clk_500hz_r2 <= ~clk_500hz_r2;        //Toggle 500Hz CLk reg;
+            cnter_500hz_r2 <= 17'd0;             //Clear counter
+        end
+        else
+            cnter_500hz_r2 <= cnter_500hz_r2 +1'b1; //Counter
     end
 end
 
@@ -150,7 +184,7 @@ assign an = ~an_r;          //Connnect Register(Anode) to Anode Pins with NOT Ga
 //When an_r == 0010, at posedge clk_500hz_r, an_r will be set to 0100(DIG2 ON);
 //....
 //DIG4 -> DIG3 -> DIG2 -> DIG1 -> DIG4 -> DIG3 -> DIG2 -> ...;
-always @(negedge rstn,posedge clk_500hz_r)begin
+always @(negedge rstn,posedge clk_500hz_r2)begin //cannot use clk, too fast maybe?
     if(!rstn)begin
         an_r <= 4'b0000;    //When system reset, empty all display;
     end
