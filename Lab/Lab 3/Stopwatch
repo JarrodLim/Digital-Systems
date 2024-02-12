@@ -1,13 +1,15 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
 // Company: Singapore University of Technology and Design
-// Engineer: Xiang Maoyang
+// Engineer: Xiang Maoyang edited by Jarrod Lim
 // Create Date: 08.01.2024 12:47:59
+// Modiefied Date 09.02.2024
 // Design Name: Basys3 Demo - Stop Watch 
 // Module Name: top_module
 // Breif: This is a simple demo stop-watch project on Basys 3 FPGA Development Board;
 // The stop watch will display time (MMSS) on 4 digs 7Segment; (M-Minute S-Second)
 // The stop watch can be reset by btnR on board; 
+// Edit: This includes the functionality of Start and Stop with a milisecond display
 // Target Devices: Basys 3 Board 
 //////////////////////////////////////////////////////////////////////////////////
 
