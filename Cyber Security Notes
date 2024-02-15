@@ -1,0 +1,35 @@
+import unittest
+
+
+class List_example:
+    def __init__(self, l):
+        self._l = l
+
+    def findMax(self): #dont need to touch this one, you are supposed to test this
+        # Precondition: the input list is a non-null list of integers
+        # Postcondition: the output is the maximum integer in the list
+        maximum = self._l[0]
+        for i in range(0, len(self._l)):
+            if maximum < self._l[i]:
+                maximum = self._l[i]
+        return maximum
+
+
+class List_exampleTest(unittest.TestCase): #we put our testcases here
+    def test_normal_list(self):
+        myList = [1, 2, 3, 4, 5] # Pre-conditions
+        myMax = List_example(myList) #create an instance
+        self.assertEqual(5, myMax.findMax()) # Post-conditions, check if output matches assumption
+        
+    def test_normal_list2(self):
+        myList2 = [] # Pre-conditions
+        self.assertFalse(len(myList2) == 0, 'List Is Empty')
+        
+    def test_normal_list3(self):
+        myList3 = ['A' ,2, 3, 4, 5] # Pre-conditions
+        myMax = List_example(myList3) #create an instance
+        self.assertRaises(TypeError, List_example.findMax(myMax))
+	
+	
+if __name__ == '__main__':
+    unittest.main()
