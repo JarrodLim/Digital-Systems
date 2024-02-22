@@ -29,6 +29,7 @@ begin //if else statements to catch each input to direct output, just testing wi
         2'b01:value <= B;
         2'b10:value <= C;
         2'b11:value <= D;
+        //case has equal priority when checking all statements, if else prioritizes the first statement
         //default: <statement here> use begin and end for multiple statements. This is to catch any other cases.
     endcase; //compares the argument SEL in case(SEL) with the bit value at the front of the colon :. MUST CATCH ALL CASES
 end
