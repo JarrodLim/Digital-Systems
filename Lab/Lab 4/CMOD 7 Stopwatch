@@ -37,7 +37,7 @@ always@(posedge sysclk, negedge rstn)begin
         cnter_500hz_r <= 17'd0; //Clear counter
     end
     else begin
-        if(cnter_500hz_r == 17'd100_000-1'b1)begin   //When counter reach 100_000
+        if(cnter_500hz_r == 17'd12_000-1'b1)begin   //When counter reach 100_000
             clk_500hz_r <= ~clk_500hz_r;        //Toggle 500Hz CLk reg;
             cnter_500hz_r <= 17'd0;             //Clear counter
         end
@@ -66,12 +66,12 @@ end
 //There are 4 7Segment LED on the Basys 3 Board, which share segment driver;
 //Hence, we have to turn on 4 7Segment LED in sequence;
 reg [7:0] segment_r;        //Register - Drive 7 Segment
-assign dp =  segment_r[7];  //Connnect Register(7-Segment) to Segment Pin-DP
-assign seg[6:0] = segment_r[6:0];   //Connnect Register(7-Segment) to Segment Pin (seg[6:0])
+assign dp = ~segment_r[7];  //Connnect Register(7-Segment) to Segment Pin-DP
+assign seg[6:0] = ~segment_r[6:0];   //Connnect Register(7-Segment) to Segment Pin (seg[6:0])
 reg [3:0] cur_num_r;        //Register - BCD Number Display at this moment; 
 wire [15:0] bcd_num;        //Wire - 4 BCD Number;
 reg [3:0] an_r;             //Register - Drive Common Anode;
-assign an = an_r;          //Connnect Register(Anode) to Anode Pins with NOT Gate;
+assign an = ~an_r;          //Connnect Register(Anode) to Anode Pins with NOT Gate;
                             //If 7Segment is Common Cathod, connect Pins without NOT Gate
 always @(negedge rstn,posedge clk_500hz_r)begin
     if(!rstn)begin
