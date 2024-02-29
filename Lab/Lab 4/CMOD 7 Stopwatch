@@ -62,6 +62,19 @@ always@(posedge clk_500hz_r, negedge rstn)begin
     end
 end
 
+reg dp_state = 0;
+always @(negedge rstn, posedge clk_1hz_r)begin
+    if(!rstn)
+        begin
+            dp_state <= 0;
+        end
+    else
+        begin
+            dp_state = ~dp_state;
+        end
+end
+assign dp = dp_state;
+
 //Drive 7Segment Display;
 //There are 4 7Segment LED on the Basys 3 Board, which share segment driver;
 //Hence, we have to turn on 4 7Segment LED in sequence;
