@@ -1,0 +1,67 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: Singapore University of Technology and Design
+// Engineer: Jarrod
+// Create Date: 08.01.2024 12:47:59
+// Design Name: Basys3 Demo - Stop Watch 
+// Module Name: top_module
+// Breif: This is a simple demo stop-watch project on Basys 3 FPGA Development Board;
+// The stop watch will display time (MMSS) on 4 digs 7Segment; (M-Minute S-Second)
+// The stop watch can be reset by btnR on board; 
+// Target Devices: Basys 3 Board 
+//////////////////////////////////////////////////////////////////////////////////
+
+module top_module(
+    input sysclk,      //100MHz Clock Source;
+    input [1:0]btn,     //btn[0] - RESET System;
+    output [6:0] seg,// 7-Segment - Segment[6:0]; What ports are these? 
+    output dp,      // 7-Segment - Segment-DP;
+    output [3:0] an, // 7-Segment - Common Anode;
+    output [1:0] led,
+    output [2:0] led0
+);
+
+wire rstn;
+wire stt;
+wire clk_1hz_r;
+wire clk_500hz_r;
+wire clk_2500hz_r;
+wire state;
+wire [15:0] bcd_num;
+
+assign rstn=~btn[0];
+assign stt=~btn[1];
+
+//----------------------------------------------Other modules------------------------------------------------//
+clk_tree stopwatch_clk(
+    .sysclk(sysclk),
+    .rstn(rstn),
+    .state(state),
+    .clk_1hz_r(clk_1hz_r),
+    .clk_500hz_r(clk_500hz_r),
+    .clk_2500hz_r(clk_2500hz_r)
+);
+    
+segment stopwatch_segment(
+    .an(an),
+    .rstn(rstn),
+    .seg(seg),
+    .bcd_num(bcd_num),
+    .clk_500hz_r(clk_500hz_r),
+    .led(led)
+);
+
+timer stopwatch_timer(
+    .rstn(rstn),
+    .clk_1hz_r(clk_1hz_r),
+    .bcd_num2(bcd_num)
+);
+
+startstop stopwatch_startstop(
+    .stt(stt),
+    .clk_2500hz_r(clk_2500hz_r),
+    .led0(led0),
+    .state(state)
+);
+
+endmodule
