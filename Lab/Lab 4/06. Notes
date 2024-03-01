@@ -1,0 +1,18 @@
+Reflection:
+I ran into issues trying to convert a single large module into several smaller modules which are technically better.
+But Integrating the code was quite tricky, know what to put as input and outputs for each module and ensuring that I do not redeclare any variables.
+
+Creating the start stop function was another challenge, I think there is an issues with debounce or the refresh rate of the start stop button checker.
+But essentially, the start stop button when triggered, would not perform its function correctly. Only after increasing the refresh rate of its function
+did it finally work more predictably, though not perfectly. 
+
+We then went on to using the RGB lights onboard the CMOD a7 which was rather interesting. For RGB values, we normally would think 0 is off and 255 is
+the maximum brightness. But this wasnt the case. It was totally opposite. So in order to say turn on the Blue light, we had to code the LED such that
+red if 255, green is 255 and blue is 0. which was a little ounter intuitive.
+
+I personally ran into an issue where the board is operating slower than the expected 12Mhz. I am unsure why this is happening.
+
+Modification:
+- Modified from BASYS 3 code
+- Added start stop functionality
+- Start stop RGB indication light
