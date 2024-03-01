@@ -1,0 +1,30 @@
+`timescale 1ns / 1ps
+
+module startstop(
+    input stt,
+    input [11:0] clk_2500hz_r,
+    input [2:0] led0,
+    output state
+    );
+    
+reg state2 = 1'b1;
+reg [2:0] colors = 0;
+always@(posedge clk_2500hz_r)begin
+    if(!stt)begin
+        state2 <= ~state2; //state 1 = running
+    end
+    if(state2 == 1)begin
+        colors[0] = 255;
+        colors[1] = 0;
+        colors[2] = 255;end
+    else if(state2 == 0)begin
+        colors[0] = 255;
+        colors[1] = 255;
+        colors[2] = 0;end
+end
+assign state = state2;
+assign led0[0] = colors[0];
+assign led0[1] = colors[1]; 
+assign led0[2] = colors[2]; 
+
+endmodule
