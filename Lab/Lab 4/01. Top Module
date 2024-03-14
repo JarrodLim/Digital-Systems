@@ -1,67 +1,45 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: Singapore University of Technology and Design
-// Engineer: Jarrod
-// Create Date: 08.01.2024 12:47:59
-// Design Name: Basys3 Demo - Stop Watch 
-// Module Name: top_module
-// Breif: This is a simple demo stop-watch project on Basys 3 FPGA Development Board;
-// The stop watch will display time (MMSS) on 4 digs 7Segment; (M-Minute S-Second)
-// The stop watch can be reset by btnR on board; 
-// Target Devices: Basys 3 Board 
-//////////////////////////////////////////////////////////////////////////////////
 
 module top_module(
-    input sysclk,      //100MHz Clock Source;
-    input [1:0]btn,     //btn[0] - RESET System;
-    output [6:0] seg,// 7-Segment - Segment[6:0]; What ports are these? 
+    input clk,      //12MHz Clock Source;
+    input btnR,     //BTNR - RESET System;
+    input btnPause,     //BTNPause - PAUSE System;
+    input pio1,
+    input pio2,
+    output [6:0] seg,// 7-Segment - Segment[6:0];
     output dp,      // 7-Segment - Segment-DP;
     output [3:0] an, // 7-Segment - Common Anode;
     output [1:0] led,
-    output [2:0] led0
+    output led0_r,
+    output led0_g
 );
-
+  
 wire rstn;
-wire stt;
-wire clk_1hz_r;
-wire clk_500hz_r;
-wire clk_2500hz_r;
+assign rstn=~btnR;
+
+
+wire clk_1hz;
+wire clk_500hz;
+wire clk_1hz_2;
+wire [15:0] bcd_time;
+wire [7:0] Csegment;
 wire state;
-wire [15:0] bcd_num;
+//optimize clock
 
-assign rstn=~btn[0];
-assign stt=~btn[1];
+sensor_array SA1(clk, rstn, pio1, pio2, led0_r, led0_g, state);
 
-//----------------------------------------------Other modules------------------------------------------------//
-clk_tree stopwatch_clk(
-    .sysclk(sysclk),
-    .rstn(rstn),
-    .state(state),
-    .clk_1hz_r(clk_1hz_r),
-    .clk_500hz_r(clk_500hz_r),
-    .clk_2500hz_r(clk_2500hz_r)
-);
-    
-segment stopwatch_segment(
-    .an(an),
-    .rstn(rstn),
-    .seg(seg),
-    .bcd_num(bcd_num),
-    .clk_500hz_r(clk_500hz_r),
-    .led(led)
-);
+clk_tree #(.COUNTER(12000)) clk_blk_500hz_1(clk,1,rstn,~btnPause,0,clk_1hz,clk_500hz); //no pause
+clk_tree #(.COUNTER(250)) clk_blk_1hz_1(clk_500hz,state,rstn,~btnPause,1,clk_1hz_2,clk_1hz); 
+clk_tree #(.COUNTER(250)) clk_blk_1hz_2(clk_500hz,1,rstn,~btnPause,0,clk_1hz,clk_1hz_2);
+//                                      clk,state,reset, pause, counter, bool, clk_out
+timer timer_0(rstn,clk_1hz,bcd_time);
+segment segment_0(rstn,clk_500hz,bcd_time,an,Csegment);
 
-timer stopwatch_timer(
-    .rstn(rstn),
-    .clk_1hz_r(clk_1hz_r),
-    .bcd_num2(bcd_num)
-);
-
-startstop stopwatch_startstop(
-    .stt(stt),
-    .clk_2500hz_r(clk_2500hz_r),
-    .led0(led0),
-    .state(state)
-);
+//assign led0_r = led_r;
+//assign led0_g = led_g;
+assign seg[6:0] = Csegment[6:0];
+assign dp = Csegment[7];
+assign led[0] = bcd_time[0]; //Second Unit modulus 2
+assign led[1] = ~bcd_time[0]; //Second Unit modulus 2
 
 endmodule
