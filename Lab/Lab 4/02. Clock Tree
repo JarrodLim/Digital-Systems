@@ -1,70 +1,46 @@
 `timescale 1ns / 1ps
-
-module clk_tree(
-    input sysclk,
-    input rstn,
+module clk_tree #(parameter COUNTER = 12000)(
+    input in_clk,
     input state,
-    output [7:0] clk_1hz_r,
-    output [13:0] clk_500hz_r,
-    output [11:0] clk_2500hz_r
-    );
-    
-reg [7:0] clk_1hz_r2;
-reg [13:0] clk_500hz_r2;
-reg [11:0] clk_2500hz_r2;    
-reg [11:0] cnter_2500hz_r;   //12Mhz/1500*2 = 2_400 (12 bits);
-reg [13:0] cnter_500hz_r;    // 12Mhz/(500Hz*2) =  12_000(14 bits);
-reg [7:0] cnter_1hz_r;      // 500Hz/(1Hz*2) = 250 (8 bits)
-reg BoardRate = 15'd12_000;
-reg ButtonRate = 15'd4_000;
-reg ClockRate = 8'd250;
+    input rstn,
+    input btnPauseN,
+    input isPausable,
+    input slow_clk,
+    output clk_out
+);
 
-always@(posedge sysclk, negedge rstn)begin
+reg [13:0]cnter;   // 12Mhz/(500Hz*2) =  12_000(14 bits);
+reg internal_hz; 
+
+assign clk_out = internal_hz;
+
+reg btn_Pause = 0;
+
+always@(posedge in_clk, negedge rstn)begin
     if(!rstn)begin              //Non-Sync Reset
-        clk_500hz_r2 <= 1'b0;    //Set 500hz clock as '0' to avoid any uncertain status;        
-        cnter_500hz_r <= 14'h0000; //Clear counter
+        internal_hz <= 1'b0;    //Set 500hz clock as '0' to avoid any uncertain status;        
+        cnter <= 14'd0; //Clear counter
     end
     else begin
-        if(cnter_500hz_r == BoardRate-1'b1)begin   //When counter reach 100_000
-            clk_500hz_r2 <= ~clk_500hz_r2;        //Toggle 500Hz CLk reg;
-            cnter_500hz_r <= 14'h0000;             //Clear counter
+        if(cnter == COUNTER-1'b1)begin   //When counter reach 12_000
+            internal_hz <= ~internal_hz;        //Toggle 500Hz CLk reg;
+            cnter <= 14'd0;             //Clear counter
         end
-        else
-            cnter_500hz_r <= cnter_500hz_r +1'b1; //Counter
+        else if(btn_Pause == 0 && state == 1)
+            cnter <= cnter +1'b1; //Counter
     end
 end
-assign clk_500hz_r = clk_500hz_r2;
 
-always@(posedge sysclk, negedge rstn)begin
-    if(!rstn)begin              //Non-Sync Reset
-        clk_2500hz_r2 <= 1'b0;    //Set 500hz clock as '0' to avoid any uncertain status;        
-        cnter_2500hz_r <= 12'h0000; //Clear counter
-    end
-    else begin
-        if(cnter_2500hz_r == ButtonRate-1'b1)begin   //When counter reach 100_000
-            clk_2500hz_r2 <= ~clk_2500hz_r2;        //Toggle 500Hz CLk reg;
-            cnter_2500hz_r <= 12'h0000;             //Clear counter
-        end
-        else
-            cnter_2500hz_r <= cnter_2500hz_r +1'b1; //Counter
-    end
-end
-assign clk_2500hz_r = clk_2500hz_r2;
-
-always@(posedge clk_500hz_r, negedge rstn)begin
+always@(negedge rstn, posedge slow_clk)
+begin
     if(!rstn)begin
-        clk_1hz_r2 <= 1'b0;
-        cnter_1hz_r <= 8'h0000;
+        btn_Pause <= 0;
     end
-    else if(state == 1)begin
-        if(cnter_1hz_r == ClockRate-1'b1)begin
-            clk_1hz_r2 <= ~clk_1hz_r2;
-            cnter_1hz_r <= 8'h0000;
-        end
-        else
-            cnter_1hz_r <= cnter_1hz_r +1'b1;
-    end
+    else
+    begin
+    if(isPausable == 1 && !btnPauseN)
+        btn_Pause <= ~btn_Pause;
+    end  
 end
-assign clk_1hz_r = clk_1hz_r2;
 
 endmodule
