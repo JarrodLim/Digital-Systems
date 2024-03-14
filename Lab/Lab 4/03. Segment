@@ -1,23 +1,20 @@
-`timescale 1ns / 1ps
-
 module segment(
-    input [3:0] an,
     input rstn,
-    input [6:0] seg,
-    input [15:0] bcd_num,
-    input [13:0] clk_500hz_r,
-    input [1:0] led
-    );
+    input clk,
+    input [15:0] seg_data,
+    output [3:0] AN,
+    output [7:0] C_segment
+);
 
 reg [7:0] segment_r;        //Register - Drive 7 Segment
-reg [3:0] an_r;             //Register - Drive Common Anode;
+assign C_segment[7] =  seg_data[0];  //Connnect Register(7-Segment) to Segment Pin-DP
+assign C_segment[6:0] = ~segment_r[6:0];   //Connnect Register(7-Segment) to Segment Pin (seg[6:0])
 reg [3:0] cur_num_r;        //Register - BCD Number Display at this moment; 
-assign an = ~an_r;          //Connnect Register(Anode) to Anode Pins with NOT Gate;
-assign seg[6:0] = ~segment_r[6:0];   //Connnect Register(7-Segment) to Segment Pin (seg[6:0])
-assign dp = bcd_num[0];  //Connnect Register(7-Segment) to Segment Pin-DP
-assign led[1:0] = {bcd_num[0],~bcd_num[0]};
+wire [15:0] bcd_num;        //Wire - 4 BCD Number;
+reg [3:0] an_r;             //Register - Drive Common Anode;
+assign AN = ~an_r;          
 
-always @(negedge rstn,posedge clk_500hz_r)begin
+always @(negedge rstn,posedge clk)begin
     if(!rstn)begin
         an_r <= 4'b0000;    //When system reset, empty all display;
     end
@@ -31,12 +28,12 @@ always @(negedge rstn,posedge clk_500hz_r)begin
     end
 end
 
-always @(an_r,bcd_num)begin
+always @(an_r,seg_data)begin
     case(an_r)
-        4'b0001: cur_num_r <= bcd_num[3:0];
-        4'b0010: cur_num_r <= bcd_num[7:4];
-        4'b0100: cur_num_r <= bcd_num[11:8];
-        4'b1000: cur_num_r <= bcd_num[15:12];
+        4'b0001: cur_num_r <= seg_data[3:0];
+        4'b0010: cur_num_r <= seg_data[7:4];
+        4'b0100: cur_num_r <= seg_data[11:8];
+        4'b1000: cur_num_r <= seg_data[15:12];
         default: cur_num_r <= 4'b0;
     endcase    
 end
