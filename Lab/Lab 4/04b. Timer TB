@@ -1,0 +1,31 @@
+`timescale 1ns / 1ps
+
+module timer_TB();
+    reg clk;
+    reg rstn;
+    wire [15:0] bcd_tim;
+
+timer a1(
+    .clk(clk),
+    .rstn(rstn),
+    .bcd_tim(bcd_tim[15:0])
+);
+
+always begin
+    #0.005 clk <= 1;
+    #0.005 clk <= 0;
+end
+
+initial begin
+    #0 clk = 0;
+    #0 rstn = 0;
+    #5 rstn = 1;
+    #5 rstn = 0;
+    #5 rstn = 1;
+    #1000000000
+    #10 $stop;
+    #10 $finish;
+end
+
+
+endmodule
