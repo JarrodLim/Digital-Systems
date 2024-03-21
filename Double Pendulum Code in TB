@@ -1,0 +1,85 @@
+`timescale 1ns / 1ps
+
+module fractions_TB();
+    reg type; //type of math function
+    reg [31:0]A; //1 pos/neg bit, 7 round bits, no decimals
+    reg [31:0]B; //total of 8 bits
+    reg [0:0]sign;
+    reg [7:0]int;
+    reg [22:0]dec;
+    reg [31:0] theta;
+
+Math math_a1( //math takes 9 bit variables, 1st bit is signed, next 8 store values
+    .A(A[31:0]),//Math.plus(A,B), Math.minus(A,B), Math.times(A,B), Math.divide(A,B)
+    .B(B[31:0]) //Math.mod(A), Math.neg(A) 
+); //
+
+num num_a2( //num takes in a signed bit, 8bin integer and 23bit decimal place
+    .sign(sign[0:0]), //num.bin(0, 8'd20, 23'd3)
+    .int(int[7:0]),
+    .dec(dec[22:0]) //only accepts 1dp
+); //
+
+//Trig trig_a3(
+//    .theta(theta[31:0])
+//);
+reg [16:0] var2;
+
+//initial begin
+//    //var2 = Math.plus(num.bin(1,8'd7,23'd00),num.bin(0,8'd12,23'd56));
+//    var2 = Math.cos(num.bin(1,8'd7,23'd00));
+//    //var2 = Math.sin(num.bin(0,8'd3,23'd99));
+//end
+reg [31:0]x0 =num.bin(0,8'd5,23'd00); //start position x
+reg [31:0]y0 =num.bin(0,8'd5,23'd00); //start position y
+reg [31:0]g = num.bin(0,8'd0,23'd05);
+reg [31:0]m1 =num.bin(0,8'd2,23'd50); //mass 1 change this
+reg [31:0]m2 =num.bin(0,8'd2,23'd50); //mass 2 change this
+reg [31:0]l1 =num.bin(0,8'd5,23'd75); //length 1 change this
+reg [31:0]l2 =num.bin(0,8'd5,23'd75); //length 2 change this
+reg [31:0]TAU=num.bin(0,8'd6,23'd28); //constant
+reg [31:0]a1 = Math.divide(TAU,num.bin(0,8'd2,23'd00));                                    //angle
+reg [31:0]a2 = Math.times(TAU,Math.divide(num.bin(0,8'd3,23'd00),num.bin(0,8'd8,23'd00))); //angle
+reg [31:0]x1, y1, x2, y2;
+reg [31:0]a1_v, a1_a, a2_v, a2_a; //first and second derivative
+reg [31:0]var1,var2,var3,var4,var5,var6,var7;
+
+initial begin
+    x1 = 0; y1 = 0; x2 = 0; y2 = 0;
+    a1_v = 0; a2_v = 0; a1_a = 0; a2_a = 0;
+end
+
+always begin
+//a1_a = (-g*(2*m1*m2)*sin(a1) - m2*g*sin(a1-2*a2) - 2*sin(a1-a2)*m2*(a2_v*a2_v*l2 + a1_v*a1_v*l1*cos(a1-a2))) / (l1*(2*m1 + m2 - m2*cos(2*a1-2*a2)));
+//              var1                   var2                var3                         var4                                    var5        
+var1 = Math.times(Math.times(Math.times(m1,m2),num.bin(0,8'd2,23'd00)),Math.times(Math.sin(a1),Math.neg(g)));
+var2 = Math.times(Math.sin(Math.minus(a1,Math.times(a2,num.bin(0,8'd2,23'd00)))),Math.times(m2,g));
+var3 = Math.times(Math.times(m2,num.bin(0,8'd2,23'd00)),Math.sin(Math.minus(a1,a2)));
+var4 = Math.plus(Math.times(l2,Math.times(a2_v,a2_v)),Math.times(Math.times(l1,Math.times(a1_v,a1_v)),Math.cos(Math.minus(a1,a2))));
+var5 = Math.times(l1,Math.plus(Math.times(num.bin(0,8'd2,23'd00),m1),Math.minus(m2,Math.times(m2,Math.cos(Math.minus(Math.times(a1,num.bin(0,8'd2,23'd00)),Math.times(a2,num.bin(0,8'd2,23'd00))))))));
+var6 = Math.divide(Math.minus(Math.minus(var1,var2),Math.times(var3,var4)),var5);
+//a2_a = 2*sin(a1-a2) * (a1_v*a1_v*l1*(m1+m2) + g*(m1+m2)*cos(a1) + a2_v*a2_v*l2*m2*cos(a1-a2)) / (l2*(2*m1 + m2 - m2*cos(2*a2-2*a2)));
+
+
+
+a1_v = Math.plus(a1_v,a1_a); //a1_v = a1_v + a1_a;
+//a2_v = Math.plus(a2_v,a2_a); //a2_v = a2_v + a2_a;
+a1 = Math.plus(a1,a1_v);     //a1 = a1 + a1_v;
+//a2 = Math.plus(a2,a2_v);     //a2 = a2 + a2_v;
+
+x1 = Math.plus(x0,Math.times(l1,Math.sin(a1))); //x1 = x0 + l1*sin(a1);
+//x2 = Math.plus(x1,Math.times(l2,Math.sin(a2))); //x2 = x1 + l2*sin(a2);
+y1 = Math.plus(y0,Math.times(l1,Math.sin(a1))); //y1 = y0 + l1*cos(a1);
+//y2 = Math.plus(y1,Math.times(l2,Math.sin(a2))); //y2 = y1 + l2*sin(a2);
+$display("x1 = %d.%d", x1[30:23], x1[7:0]);
+//$display("x2 = %d.%d", x2[30:23], x2[7:0]);
+$display("y1 = %d.%d", y1[30:23], y1[7:0]);
+//$display("y2 = %d.%d", y2[30:23], y2[7:0]);
+#10
+#10
+#10
+$stop;
+$finish;
+end
+
+endmodule
