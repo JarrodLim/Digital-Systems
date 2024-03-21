@@ -12,7 +12,8 @@ module top_module(
     output[31:0]x_1,
     output[31:0]x_2,
     output[31:0]y_1,
-    output[31:0]y_2);
+    output[31:0]y_2,
+    output[31:0]RNG);
 
 Math MATH( //math takes 9 bit variables, 1st bit is signed, next 8 store values
     A,//Math.plus(A,B), Math.minus(A,B), Math.times(A,B), Math.divide(A,B)
@@ -86,5 +87,10 @@ assign x_1 = x1;
 assign x_2 = x2;
 assign y_1 = y1;
 assign y_2 = y2;
+assign RNG[7:0]  =y_2[7:0];
+assign RNG[15:8] =x_2[7:0];
+assign RNG[20:16] =y_1[7:0];
+assign RNG[27:21]=x_1[7:0];
+assign RNG[31:28]=x_1[26:23];
 
 endmodule
