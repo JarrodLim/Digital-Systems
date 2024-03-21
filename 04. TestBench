@@ -13,6 +13,7 @@ module top_module_tb();
     wire[31:0]x_2;
     wire[31:0]y_1;
     wire[31:0]y_2;
+    wire[31:0]RNG;
     
 top_module tester(
     .clk(clk),
@@ -26,7 +27,8 @@ top_module tester(
     .x_1(x_1[31:0]),
     .x_2(x_2[31:0]),
     .y_1(y_1[31:0]),
-    .y_2(y_2[31:0])
+    .y_2(y_2[31:0]),
+    .RNG(RNG[31:0])
 );
 
 Math math_a1( //math takes 9 bit variables, 1st bit is signed, next 8 store values
