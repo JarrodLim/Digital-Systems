@@ -40,20 +40,14 @@ num num_a2( //num takes in a signed bit, 8bin integer and 23bit decimal place
     .dec(dec[22:0]) //only accepts 1dp
 ); //
 
-initial begin
+reg [8:0] counter = 0;
+always begin
         #0 clk = 0;
-        #100 clk = 1;
-        #100 clk = 0;
-        #100 clk = 1;
-        #100 clk = 0;
-        #100 clk = 1;
-        #100 clk = 0;
-        #100 clk = 1;
-        #100 clk = 0;  
-        #100 clk = 1;
-        #100 clk = 0;
-        #100 clk = 1;
-        #100 clk = 0;         
+        while(counter <= 8'd200)begin
+            #10
+            clk = ~clk;
+            counter = counter + 8'd1;
+        end                  
         #10 $stop;
         #10 $finish;
     end
