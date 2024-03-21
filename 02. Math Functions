@@ -90,10 +90,10 @@ function [31:0] plus;
             //$display("A = %c%d.%d, and , B = %c%d.%d", symbol[A[31]],A[30:23],A[22:0],symbol[B[31]],B[30:23],B[22:0]);
             plus = var;
             //$display("A + B = %c%d.%d", symbol[plus[31]],plus[30:23],plus[22:0]);
-            $display("%c%d.%d + %c%d.%d = %c%d.%d"
-            ,symbol[a[31]],a[30:23],a[22:0]
-            ,symbol[b[31]],b[30:23],b[22:0]
-            ,symbol[plus[31]],plus[30:23],plus[22:0]);
+//            $display("%c%d.%d + %c%d.%d = %c%d.%d"
+//            ,symbol[a[31]],a[30:23],a[22:0]
+//            ,symbol[b[31]],b[30:23],b[22:0]
+//            ,symbol[plus[31]],plus[30:23],plus[22:0]);
         end
 endfunction
 //==========================================================================//
@@ -150,10 +150,10 @@ function [31:0] times;
             //$display("A = %c%d.%d, and , B = %c%d.%d", symbol[A[31]],A[30:23],A[22:0],symbol[B[31]],B[30:23],B[22:0]);
             times = var;
             //$display("A + B = %c%d.%d", symbol[times[31]],times[30:23],times[22:0]);
-            $display("%c%d.%d * %c%d.%d = %c%d.%d"
-            ,symbol[a[31]],a[30:23],a[22:0]
-            ,symbol[b[31]],b[30:23],b[22:0]
-            ,symbol[times[31]],times[30:23],times[22:0]);            
+//            $display("%c%d.%d * %c%d.%d = %c%d.%d"
+//            ,symbol[a[31]],a[30:23],a[22:0]
+//            ,symbol[b[31]],b[30:23],b[22:0]
+//            ,symbol[times[31]],times[30:23],times[22:0]);            
         end
 endfunction
 //==========================================================================//
@@ -205,10 +205,10 @@ function [31:0] divide;
             //$display("Ans = %d.%d", var[30:23], var[22:0]);
             //$display("A = %c%d.%d, and , B = %c%d.%d", symbol[A[31]],A[30:23],A[22:0],symbol[B[31]],B[30:23],B[22:0]);
             divide = var;
-            $display("%c%d.%d / %c%d.%d = %c%d.%d"
-            ,symbol[a[31]],a[30:23],a[22:0]
-            ,symbol[b[31]],b[30:23],b[22:0]
-            ,symbol[divide[31]],divide[30:23],divide[22:0]);
+//            $display("%c%d.%d / %c%d.%d = %c%d.%d"
+//            ,symbol[a[31]],a[30:23],a[22:0]
+//            ,symbol[b[31]],b[30:23],b[22:0]
+//            ,symbol[divide[31]],divide[30:23],divide[22:0]);
         end
 endfunction
 //==========================================================================//
@@ -223,9 +223,9 @@ function [31:0] mod;
             a = A;
             var[31] = 0;
             var[30:0] = a[30:0];          
-            $display("A = %c%d.%d", symbol[A[31]],A[30:23],A[22:0]);
+//            $display("A = %c%d.%d", symbol[A[31]],A[30:23],A[22:0]);
             mod = var;
-            $display("|A| = %c%d.%d", symbol[var[31]],mod[30:23],mod[22:0]);
+//            $display("|A| = %c%d.%d", symbol[var[31]],mod[30:23],mod[22:0]);
         end
 endfunction
 //==========================================================================//
@@ -240,9 +240,9 @@ function [31:0] neg;
             a = A;
             var[31] = ~a[31];
             var[30:0] = a[30:0];          
-            $display("A = %c%d.%d", symbol[A[31]],A[30:23],A[22:0]);
+//            $display("A = %c%d.%d", symbol[A[31]],A[30:23],A[22:0]);
             neg = var;
-            $display("neg A = %c%d.%d", symbol[var[31]],neg[30:23],neg[22:0]);
+//            $display("neg A = %c%d.%d", symbol[var[31]],neg[30:23],neg[22:0]);
         end
 endfunction
 //==========================================================================//
@@ -283,29 +283,29 @@ function [31:0] sin;
         theta = mod(theta);
         theta = minus(pi_2,theta);end       
         2'b11:begin//negatiev number greater than 2pi
-        $display("theta before = %c%d.%d", symbol[theta[31]],theta[30:23],theta[22:0]);
+        //$display("theta before = %c%d.%d", symbol[theta[31]],theta[30:23],theta[22:0]);
         store = 0; store = divide(theta,pi_2); store[31] = 0; store[22:0] = 23'd0;//1.11
         theta = plus(theta,times(plus(const1,store),pi_2)); //7-2pi
-        $display("theta after= %c%d.%d", symbol[theta[31]],theta[30:23],theta[22:0]);
+        //$display("theta after= %c%d.%d", symbol[theta[31]],theta[30:23],theta[22:0]);
         end
     endcase
     if(theta >= 0 && theta <= pi)begin //first 2 quadrants
         //sine function for 0 to pi:   y = 16x(pi-x) / (5pi^2 - 4x(pi-x))
         var = times(times(const16,theta),minus(pi,theta));
         var = divide(var,times(times(pi,pi),const5) - times(times(const4,theta),minus(pi,theta)));
-        $display("i went here");
+        //$display("i went here");
         end
     if(theta > pi && theta <= pi_2)begin //last 2 quadrants ///ERROR HERE
         //sine function for pi to 2pi: y = -16(x-2pi)(pi-x) / (5pi^2 - 4(x-2pi)(pi-x))
         var = times(times(neg(const16), minus(theta,pi_2)),minus(pi,theta));
-        $display("var part 1 = %c%d.%d", symbol[var[31]],var[30:23],var[22:0]);
+        //$display("var part 1 = %c%d.%d", symbol[var[31]],var[30:23],var[22:0]);
         var = divide(var,minus(times(times(pi,pi),const5),times(times(const4,minus(theta,pi_2)),minus(pi,theta))));
-        $display("var part 2 = %c%d.%d", symbol[var[31]],var[30:23],var[22:0]);
+        //$display("var part 2 = %c%d.%d", symbol[var[31]],var[30:23],var[22:0]);
         end
     sin = var;
     //$display("pi = %c%d.%d", symbol[pi[31]],pi[30:23],pi[22:0]);
-    $display("theta = %c%d.%d", symbol[theta[31]],theta[30:23],theta[22:0]);
-    $display("sin(theta) = %c%d.%d", symbol[sin[31]],sin[30:23],sin[22:0]);
+    //$display("theta = %c%d.%d", symbol[theta[31]],theta[30:23],theta[22:0]);
+    //$display("sin(theta) = %c%d.%d", symbol[sin[31]],sin[30:23],sin[22:0]);
     end
 endfunction
 //==========================================================================//
@@ -321,7 +321,7 @@ function [31:0] cos;
     cos = sin(minus(divide(pi,const2),theta));
     //$display("pi = %c%d.%d", symbol[pi[31]],pi[30:23],pi[22:0]);
     //$display("theta = %c%d.%d", symbol[theta[31]],theta[30:23],theta[22:0]);
-    $display("cos(theta) = %c%d.%d", symbol[cos[31]],cos[30:23],cos[22:0]);
+    //$display("cos(theta) = %c%d.%d", symbol[cos[31]],cos[30:23],cos[22:0]);
     end
 endfunction
 //==========================================================================//
