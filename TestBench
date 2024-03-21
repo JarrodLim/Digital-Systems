@@ -1,0 +1,61 @@
+`timescale 1ns / 1ps
+
+module top_module_tb();
+    reg clk;
+    reg [31:0]A; //1 pos/neg bit, 7 round bits, no decimals
+    reg [31:0]B; //total of 8 bits
+    reg [31:0]angle;
+    reg [31:0]theta;
+    reg [0:0]sign;
+    reg [7:0]int;
+    reg [22:0]dec;
+    wire[31:0]x_1;
+    wire[31:0]x_2;
+    wire[31:0]y_1;
+    wire[31:0]y_2;
+    
+top_module tester(
+    .clk(clk),
+    .A(A[31:0]),
+    .B(B[31:0]),
+    .angle(angle[31:0]),
+    .theta(theta[31:0]),
+    .sign(sign[0:0]),
+    .int(int[7:0]),
+    .dec(dec[22:0]),
+    .x_1(x_1[31:0]),
+    .x_2(x_2[31:0]),
+    .y_1(y_1[31:0]),
+    .y_2(y_2[31:0])
+);
+
+Math math_a1( //math takes 9 bit variables, 1st bit is signed, next 8 store values
+    .A(A[31:0]),//Math.plus(A,B), Math.minus(A,B), Math.times(A,B), Math.divide(A,B)
+    .B(B[31:0]) //Math.mod(A), Math.neg(A) 
+); //
+
+num num_a2( //num takes in a signed bit, 8bin integer and 23bit decimal place
+    .sign(sign[0:0]), //num.bin(0, 8'd20, 23'd3)
+    .int(int[7:0]),
+    .dec(dec[22:0]) //only accepts 1dp
+); //
+
+initial begin
+        #0 clk = 0;
+        #100 clk = 1;
+        #100 clk = 0;
+        #100 clk = 1;
+        #100 clk = 0;
+        #100 clk = 1;
+        #100 clk = 0;
+        #100 clk = 1;
+        #100 clk = 0;  
+        #100 clk = 1;
+        #100 clk = 0;
+        #100 clk = 1;
+        #100 clk = 0;         
+        #10 $stop;
+        #10 $finish;
+    end
+
+endmodule
