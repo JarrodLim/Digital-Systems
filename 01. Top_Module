@@ -73,8 +73,8 @@ a2 = MATH.plus(a2,a2_v);     //a2 = a2 + a2_v;
 
 x1 = MATH.plus(x0,MATH.times(l1,MATH.sin(a1))); //x1 = x0 + l1*sin(a1);
 x2 = MATH.plus(x1,MATH.times(l2,MATH.sin(a2))); //x2 = x1 + l2*sin(a2);
-y1 = MATH.plus(y0,MATH.times(l1,MATH.sin(a1))); //y1 = y0 + l1*cos(a1);
-y2 = MATH.plus(y1,MATH.times(l2,MATH.sin(a2))); //y2 = y1 + l2*sin(a2);
+y1 = MATH.plus(y0,MATH.times(l1,MATH.cos(a1))); //y1 = y0 + l1*cos(a1);
+y2 = MATH.plus(y1,MATH.times(l2,MATH.cos(a2))); //y2 = y1 + l2*cos(a2);
             
 symbol[1] = "-";
 symbol[0] = "+";
@@ -89,7 +89,7 @@ assign y_1 = y1;
 assign y_2 = y2;
 assign RNG[7:0]  =y_2[7:0];
 assign RNG[15:8] =x_2[7:0];
-assign RNG[20:16] =y_1[7:0];
+assign RNG[20:16]=y_1[7:0];
 assign RNG[27:21]=x_1[7:0];
 assign RNG[31:28]=x_1[26:23];
 
