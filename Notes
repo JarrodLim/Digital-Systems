@@ -1,0 +1,28 @@
+//Loops --------------------------------------//
+for (i = 16; i<18; i=i+1)
+  begin
+  end
+
+reg i = 16;
+while (i>0)
+  begin
+  ...
+  i = i-1;
+  end
+
+//conditional statements----------------------//
+reg A, B;
+if (A < B) begin
+end
+elseif( A = B) begin
+end
+else begin
+end
+
+case({A,B})
+  2'b00: begin end
+  2'b01: begin end
+  2'b10: begin end
+  2'b11: begin end
+  default: begin end //case remainder
+endcase
