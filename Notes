@@ -26,3 +26,9 @@ case({A,B})
   2'b11: begin end
   default: begin end //case remainder
 endcase
+
+//Always -------------------------------------//
+functions like a loop
+always@* means run whatever is in the always loop whenever an input changes
+always@(a or b) means run whenever a or b changes
+always@(posedge clk) means run on positive cycle of the clock
