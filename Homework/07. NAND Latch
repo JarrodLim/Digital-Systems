@@ -1,0 +1,22 @@
+module nand_rs(q,qb,s,r);
+  outut q,qb;
+  input s,r;
+
+  nand #1 g1(q,s,qb);
+  nand #1 g2(qb,q,r);
+endmodule
+//-------------------------------------------------------------------------------------//
+
+module nand_rs_tb;
+  wire q,qbl
+  reg s,r;
+
+nand_rs a1(q,qb,s,r);
+
+initial begin
+  s = 0; r = 1;
+  #10 s = 1; r = 1;
+  #10 s = 1; r = 0;
+  #10 s = 1; r = 1;
+end
+endmodule
