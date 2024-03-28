@@ -1,7 +1,7 @@
 module d3_8(out,in);
   output [7:0] out;
   input [2:0] in;
-  reg [7:0];
+  reg [7:0] out;
 
 always @(*) begin
   case({in[2],in[1],in[0]})
