@@ -1,1 +1,35 @@
+module dff(q,qb,clk,d,rst);
+output q,qb;
+input clk,d,rst;
+reg q,qb;
 
+always @(posedge clk) begin
+  if(rst) begin
+    q = 0;
+    qb = !q;  
+  end
+  else begin
+    q = d;
+    qb = !q;
+  end
+end
+
+endmodule
+//-------------------------------------------------------------//
+
+module dff_tb;
+  wire q,qb;
+  reg clk,d,rst;
+
+dff a1(q,qb,clk,d,rst);
+
+initial clk = 0;
+always #10 clk = !clk;
+
+initial begin
+  rst = 0; d = 1;
+  #25 rst = 1;
+  #25 rst = 0;
+  #25 $stop;
+  #25 $finish;
+end
