@@ -2,5 +2,10 @@ module adder(a, b, z);
 input [7:0] a;
 input [7:0] b;
 output [7:0] z;
+reg [7:0] var;
 
-
+always@(*) begin
+  var = a + b;
+end
+assign z = var;
+endmodule;
