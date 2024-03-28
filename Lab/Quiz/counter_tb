@@ -1,0 +1,46 @@
+module counter_tb();
+reg reset;
+reg clock;
+reg updown;
+wire [7:0] count;
+wire cout;
+
+counter jarrods_counter(
+    .reset(reset),
+    .clock(clock),
+    .updown(updown),
+    .count(count[7:0]),
+    .cout(cout)
+);
+
+always
+begin
+    #1 clock=!clock;
+end
+
+always //activating the reset button
+begin
+    //testing the reset button
+    #300 reset = 1;
+    //#30 reset = 0;
+end
+initial begin
+    reset = 0;
+    reset = 1;
+    clock = 0;
+    updown = 1;
+    #20 reset = 1; //enable
+    #400 reset = 0;
+    #5 reset = 1;
+    #50 updown = 0;
+    #50 updown = 1;
+    #50 updown = 0;
+    #200 reset = 0;
+    #5 reset = 1;
+    #500
+    
+    $stop;
+    $finish;
+end
+
+endmodule
