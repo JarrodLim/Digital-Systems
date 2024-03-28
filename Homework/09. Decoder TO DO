@@ -15,3 +15,31 @@ always @(*) begin
     3'b111: out = 8'h08;
   endcase
 end
+
+//---------------------------------------------------------//
+
+module d2_8_tb;
+  wire [7:0] out;
+  reg [2:0] in;
+
+d3_8 a1(out,in);
+initial in[2] = 0; always #40 in[2] = !in[2];
+initial in[1] = 0; always #20 in[1] = !in[1];
+initial in[0] = 0; always #10 in[0] = !in[0];
+
+//or can be written as the following----------//
+always @(*) begin
+  #50 in = 3'b000;
+  #50 in = 3'b001;
+  #50 in = 3'b010;
+  #50 in = 3'b011;
+  #50 in = 3'b100;
+  #50 in = 3'b101;
+  #50 in = 3'b110;
+  #50 in = 3'b111;
+
+initial begin
+  #100 $stop;
+  #110 $finish; 
+  end
+endmodule
