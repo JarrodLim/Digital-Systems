@@ -9,3 +9,8 @@ always@(*) begin
 end
 assign z = var;
 endmodule;
+
+//-------------------------------------------------//
+module adder_tb([7:0]A, [7:0]B, [7:0]Z);
+
+
