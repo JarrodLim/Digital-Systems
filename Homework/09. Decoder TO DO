@@ -1,1 +1,17 @@
+module d3_8(out,in);
+  output [7:0] out;
+  input [2:0] in;
+  reg [7:0];
 
+always @(*) begin
+  case({in[2],in[1],in[0]})
+    3'b000: out = 8'h01;
+    3'b001: out = 8'h02;
+    3'b010: out = 8'h03;
+    3'b011: out = 8'h04;
+    3'b100: out = 8'h05;
+    3'b101: out = 8'h06;
+    3'b110: out = 8'h07;
+    3'b111: out = 8'h08;
+  endcase
+end
