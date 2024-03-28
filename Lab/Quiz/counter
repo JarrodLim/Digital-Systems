@@ -1,0 +1,63 @@
+//Student ID:1003160, Name: Jarrod Lim, Counter: till 96 max val
+module counter(
+    input reset, //active-low to reset counter, reset to 0 if updown = 1, upper limit if 0
+    input clock, //primary input
+    input updown, //direction of counter, 1 = up, 0 = down
+    output [7:0] count, //fill MSBs with 1's
+    output cout //when reach upper limit, cout = 1'b1, else 1'b0
+    //upper limit as given in question 1 is 96 for 7 bits, therefore bit 8 set to 0
+    ); //when reset = 1 then start the counting thingy
+    
+reg [7:0] counter;
+reg [7:0] upperlimit;
+reg countout;
+
+initial begin 
+counter[7] = 1'b1;
+upperlimit = 8'd96;
+upperlimit[7] = 1;
+countout = 0;
+end
+
+always@(posedge updown, reset) begin
+    counter[6:0] = 0 - 1'b1;
+end
+
+always@(negedge updown, reset) begin
+    counter[6:0] = upperlimit + 1'b1;
+end
+
+always@(posedge clock) begin
+    if(countout == 1)
+        begin countout = 0;end
+    else begin
+        //do nothing, avoid latch
+    end
+    case(updown)
+    1'b1:begin
+        counter[6:0] = counter[6:0] + 1'b1;
+        if(counter[6:0] == upperlimit[6:0])
+            begin
+                countout = 1;
+            end
+        else if(counter[6:0] > upperlimit[6:0])
+            begin
+                counter[6:0] = 0;
+            end
+        end
+    1'b0:begin
+        counter[6:0] = counter[6:0] - 1'b1;
+        if(counter[6:0] == 0)
+            begin
+                countout = 1;
+            end
+        else if(counter[6:0] == 7'b1111111)
+            begin
+                counter[6:0] = upperlimit;
+            end
+        end
+    endcase
+end
+assign count = counter;
+assign cout = countout;
+endmodule
