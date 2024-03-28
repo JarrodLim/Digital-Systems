@@ -11,6 +11,10 @@ assign z = var;
 endmodule;
 
 //-------------------------------------------------//
-module adder_tb([7:0]A, [7:0]B, [7:0]Z);
+module adder_tb();
+wire [7:0]A;
+wire [7:0]B;
+reg [7:0]Z;
+
 
 
