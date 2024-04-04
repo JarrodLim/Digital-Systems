@@ -30,6 +30,9 @@ num NUM( //num takes in a signed bit, 8bin integer and 23bit decimal place
 //to get the random numbers, modify the below 7 variables and run for a random amount of time
 //the random numbers will appear as x1 x2, y1 y2 values
 //these position values correspond to the position of the masses for the chaotic pendulum during operation
+
+//https://www.myphysicslab.com/pendulum/double-pendulum-en.html
+//https://www.youtube.com/watch?v=ySvU8oQLtHY
     
 //reg [31:0]x0 =NUM.bin(1,8'd2,23'd17); //location of center - X
 //reg [31:0]y0 =NUM.bin(0,8'd7,23'd33); //location of center - Y
